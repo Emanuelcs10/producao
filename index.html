@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial - Produção</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(120deg, #e3f2fd, #bbdefb);
+        }
+
+        .container {
+            text-align: center;
+            background: #ffffff;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: fadeIn 1s ease forwards;
+        }
+
+        h1 {
+            color: #155bb5;
+            margin-bottom: 50px;
+            font-size: 2.2em;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .buttons a {
+            text-decoration: none;
+            background: #155bb5;
+            color: white;
+            padding: 18px 0;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s;
+        }
+
+        /* Efeito animado no hover */
+        .buttons a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #0f3a80;
+            transition: 0.5s;
+            z-index: 0;
+        }
+
+        .buttons a:hover::before {
+            left: 0;
+        }
+
+        .buttons a span {
+            position: relative;
+            z-index: 1;
+            transition: 0.5s;
+        }
+
+        .buttons a:hover span {
+            color: #fff;
+        }
+
+        /* Animação de fade-in do container */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 40px 20px;
+            }
+            .buttons a {
+                font-size: 18px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Escolha a Produção</h1>
+    <div class="buttons">
+        <a href="/producaoinj/indexcrntralinj.html"><span>Produção Injeção</span></a>
+        <a href="/producaots/indexts.html"><span>Produção TS</span></a>
+        <a href="/producaomet/indexmet.html"><span>Produção Metalizado</span></a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cálculo de Produção com Segura Hora</title>
+<style>
+/* Reset e corpo */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #f0f4f7, #d9e2ec);
+    padding: 20px;
+}
+
+/* Container principal */
+.container {
+    background-color: #ffffff;
+    max-width: 700px;
+    margin: auto;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Títulos */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1a73e8;
+}
+
+/* Inputs e selects */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border 0.3s;
+}
+input:focus, select:focus {
+    border-color: #1a73e8;
+    outline: none;
+}
+
+/* Botão com animação */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* efeito de hover animado */
+button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: rgba(255,255,255,0.3);
+    transform: skewX(-25deg);
+    transition: all 0.5s ease;
+}
+
+button:hover::after {
+    left: 125%;
+}
+
+button:hover {
+    background-color: #155bb5;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+/* Resumo */
+.resultado {
+    background-color: #e3f2fd;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Tabela de detalhes */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 0.95rem;
+}
+th {
+    background-color: #1a73e8;
+    color: white;
+}
+tr:nth-child(even) {
+    background-color: #f1f5f9;
+}
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📦 Cálculo de Produção</h2>
+
+    <label>Pares por hora da máquina:</label>
+    <input type="number" id="paresHora" min="1" placeholder="Ex: 120">
+
+    <label>Número de matrizes da máquina:</label>
+    <select id="matrizes">
+        <option value="12">12 matrizes</option>
+        <option value="18">18 matrizes</option>
+    </select>
+
+    <label>Número de matrizes do Segura Hora:</label>
+    <input type="number" id="matrizesSegura" min="1" placeholder="Ex: 6">
+
+    <label>Pares por caixa:</label>
+    <input type="number" id="paresCaixa" min="1" placeholder="Ex: 24">
+
+    <label>Meta de horas:</label>
+    <select id="metaHoras">
+        <option value="8">8 horas</option>
+        <option value="9">9 horas</option>
+    </select>
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div id="resumo" class="resultado"></div>
+    <div id="detalhes"></div>
+</div>
+
+<script>
+function calcular() {
+    let paresHora = parseFloat(document.getElementById('paresHora').value);
+    let matrizes = parseInt(document.getElementById('matrizes').value);
+    let matrizesSegura = parseInt(document.getElementById('matrizesSegura').value);
+    let paresCaixa = parseFloat(document.getElementById('paresCaixa').value);
+    let metaHoras = parseFloat(document.getElementById('metaHoras').value);
+
+    if(isNaN(paresHora) || isNaN(paresCaixa) || isNaN(metaHoras) || isNaN(matrizesSegura) || paresHora<=0 || paresCaixa<=0 || metaHoras<=0 || matrizesSegura<=0){
+        document.getElementById('resumo').innerHTML = "⚠️ Preencha todos os campos corretamente!";
+        document.getElementById('detalhes').innerHTML = "";
+        return;
+    }
+
+    // Padrão1
+    let padrao1 = paresHora / matrizes;
+
+    // Padrão2
+    let padrao2 = padrao1 * matrizesSegura;
+
+    // Tempo por caixa (em horas)
+    let tempoPorCaixa = paresCaixa / padrao2;
+
+    // Número de caixas dentro da meta
+    let caixasDentroMeta = Math.floor(metaHoras / tempoPorCaixa);
+
+    // Adiciona uma caixa extra que passa a meta
+    let totalCaixas = caixasDentroMeta + 1;
+
+    // Produção total considerando todas as caixas (mesmo a que passa a meta)
+    let producaoTotal = paresCaixa * totalCaixas;
+
+    // Resumo
+    document.getElementById('resumo').innerHTML = `
+        <strong>Padrão para ${matrizesSegura} matriz:</strong> ${padrao2.toFixed(2)} pares/h<br>
+        <strong>Produção total:</strong> ${producaoTotal} pares
+    `;
+
+    // Detalhes de cada caixa com tempo trabalhado acumulado
+    let detalhesHTML = `<table>
+        <tr>
+            <th>Caixa Nº</th>
+            <th>Pares acumulados</th>
+            <th>Tempo trabalhado acumulado</th>
+        </tr>`;
+
+    let paresAcumulados = 0;
+    let tempoAcumulado = 0;
+
+    for(let i=1; i<=totalCaixas; i++){
+        paresAcumulados += paresCaixa;
+        tempoAcumulado += tempoPorCaixa;
+
+        let horas = Math.floor(tempoAcumulado);
+        let minutos = Math.round((tempoAcumulado - horas)*60);
+        if(minutos >= 60){
+            horas += Math.floor(minutos/60);
+            minutos = minutos%60;
+        }
+        let tempoFormatado = `${horas}h ${minutos}min`;
+
+        detalhesHTML += `<tr>
+            <td>${i}</td>
+            <td>${paresAcumulados}</td>
+            <td>${tempoFormatado}</td>
+        </tr>`;
+    }
+
+    detalhesHTML += "</table>";
+    document.getElementById('detalhes').innerHTML = detalhesHTML;
+}
+</script>
+
+</body>
+</html>

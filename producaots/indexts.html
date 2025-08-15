@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Caixas e Meta</title>
+     <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #e0f7fa;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 40px auto;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #00796b;
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 8px 0;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        /* Botão com animação */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* efeito de hover animado */
+button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: rgba(255,255,255,0.3);
+    transform: skewX(-25deg);
+    transition: all 0.5s ease;
+}
+
+button:hover::after {
+    left: 125%;
+}
+
+button:hover {
+    background-color: #155bb5;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+        h3 {
+            text-align: center;
+            margin-top: 20px;
+            color: #004d40;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        table, th, td {
+            border: 1px solid #b2dfdb;
+        }
+        th {
+            background: #00796b;
+            color: white;
+        }
+        td {
+            text-align: center;
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background: #e0f2f1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📦 Calculadora de Produção</h2>
+
+    <label>Pares produzidos por hora:</label>
+    <input type="number" id="paresHora" min="1" placeholder="Ex: 120">
+
+    <label>Pares por caixa:</label>
+    <input type="number" id="paresCaixa" min="1" placeholder="Ex: 24">
+
+    <label>Meta:</label>
+    <select id="metaHoras">
+        <option value="8">Meta de 8 horas</option>
+        <option value="9">Meta de 9 horas</option>
+    </select>
+
+    <button onclick="calcular()">Calcular</button>
+
+    <h3 id="resultado"></h3>
+
+    <div id="detalhes"></div>
+</div>
+
+<script>
+function calcular() {
+    let paresHora = parseFloat(document.getElementById('paresHora').value);
+    let paresCaixa = parseFloat(document.getElementById('paresCaixa').value);
+    let metaHoras = parseInt(document.getElementById('metaHoras').value);
+
+    if (isNaN(paresHora) || isNaN(paresCaixa) || paresHora <= 0 || paresCaixa <= 0) {
+        alert("⚠️ Preencha todos os campos corretamente!");
+        return;
+    }
+
+    let totalPares = paresHora * metaHoras;
+    let totalCaixas = Math.ceil(totalPares / paresCaixa);
+
+    document.getElementById('resultado').textContent = 
+        `Meta de ${metaHoras} horas: ${totalPares} pares (${totalCaixas} caixas)`;
+
+    // Gerar tabela de detalhes
+    let detalhesHTML = `<table>
+        <tr>
+            <th>Caixa Nº</th>
+            <th>Pares acumulados</th>
+            <th>Tempo trabalhado</th>
+        </tr>`;
+
+    let paresAcumulados = 0;
+    let tempoTotalHoras = 0;
+
+    for (let i = 1; i <= totalCaixas; i++) {
+        paresAcumulados += paresCaixa;
+
+        // Calcula tempo necessário para produzir essa caixa
+        let tempoNecessarioHoras = paresCaixa / paresHora; 
+        tempoTotalHoras += tempoNecessarioHoras;
+
+        // Converte tempo em horas e minutos
+        let horas = Math.floor(tempoTotalHoras);
+        let minutos = Math.round((tempoTotalHoras - horas) * 60);
+
+        if (minutos >= 60) {
+            horas += Math.floor(minutos / 60);
+            minutos = minutos % 60;
+        }
+
+        let tempoFormatado = `${horas}h ${minutos}min`;
+        if (paresAcumulados > totalPares) paresAcumulados = totalPares;
+
+        detalhesHTML += `<tr>
+            <td>${i}</td>
+            <td>${paresAcumulados}</td>
+            <td>${tempoFormatado}</td>
+        </tr>`;
+    }
+
+    detalhesHTML += "</table>";
+    document.getElementById('detalhes').innerHTML = detalhesHTML;
+}
+</script>
+
+</body>
+</html>

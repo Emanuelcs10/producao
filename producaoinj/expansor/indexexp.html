@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cálculo de Expansor</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display:flex; justify-content:center; align-items:flex-start;
+        min-height:100vh; background:linear-gradient(120deg, #e3f2fd, #bbdefb);
+        padding:20px;
+    }
+    .container {
+        max-width:600px; width:100%;
+        background:#fff; padding:50px 40px;
+        border-radius:25px; box-shadow:0 25px 50px rgba(0,0,0,0.2);
+        animation: fadeIn 1s ease forwards;
+    }
+    h1 { text-align:center; color:#155bb5; margin-bottom:40px; font-size:2.5em; }
+    label { font-weight:bold; display:block; margin-top:15px; color:#155bb5; font-size:16px; }
+    input[type="number"], select { width:100%; padding:10px; margin:5px 0 15px 0; border:1px solid #ccc; border-radius:10px; font-size:16px; }
+    button {
+        background:#155bb5; color:white; border:none; padding:12px 25px; border-radius:12px; font-size:16px; font-weight:bold;
+        cursor:pointer; position:relative; overflow:hidden; transition:0.4s; margin-top:20px; width:100%;
+    }
+    button::before {
+        content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:#0f3a80; transition:0.5s; z-index:0; border-radius:12px;
+    }
+    button:hover::before { left:0; }
+    button span { position:relative; z-index:1; transition:0.5s; }
+    button:hover span { color:#fff; }
+    .resultado { font-weight:bold; margin-top:20px; color:#00796b; font-size:18px; text-align:center; }
+    @keyframes fadeIn { 0%{opacity:0; transform:translateY(-20px);} 100%{opacity:1; transform:translateY(0);} }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>💥 Cálculo de Expansor</h1>
+
+    <label for="operacao">Operação</label>
+    <select id="operacao">
+        <option value="adicionar">Adicionar Moído</option>
+        <option value="diminuir">Diminuir Moído</option>
+        <option value="puro">Puro</option>
+    </select>
+
+    <label for="moidoAnterior">Percentual de moído anterior (%)</label>
+    <input type="number" id="moidoAnterior" min="0" step="0.01" placeholder="Ex: 50">
+
+    <label for="expansorAnterior">Percentual de expansor anterior (%)</label>
+    <input type="number" id="expansorAnterior" min="0" step="0.01" placeholder="Ex: 2.5">
+
+    <label for="moidoAtual">Percentual de moído atual (%)</label>
+    <input type="number" id="moidoAtual" min="0" step="0.01" placeholder="Ex: 60">
+
+    <button id="calcular"><span>Calcular Expansor</span></button>
+
+    <div class="resultado" id="resultado"></div>
+</div>
+
+<script>
+document.getElementById('calcular').addEventListener('click', () => {
+    const operacao = document.getElementById('operacao').value;
+    const moidoAnterior = parseFloat(document.getElementById('moidoAnterior').value);
+    const expansorAnterior = parseFloat(document.getElementById('expansorAnterior').value);
+    let moidoAtual = parseFloat(document.getElementById('moidoAtual').value);
+    const resultadoDiv = document.getElementById('resultado');
+
+    if(isNaN(moidoAnterior) || isNaN(expansorAnterior) || (operacao !== "puro" && isNaN(moidoAtual))){
+        resultadoDiv.textContent = "⚠️ Preencha todos os campos corretamente!";
+        return;
+    }
+
+    let expansorAtual = expansorAnterior;
+
+    if(operacao === "adicionar"){
+        expansorAtual += ((moidoAtual - moidoAnterior)/10)*0.2;
+    } else if(operacao === "diminuir"){
+        expansorAtual -= ((moidoAnterior - moidoAtual)/10)*0.2;
+    } else if(operacao === "puro"){
+        // Puro: moído atual = 0, diminui expansor
+        expansorAtual -= (moidoAnterior/10)*0.2;
+    }
+
+    resultadoDiv.textContent = `Expansor Atual: ${expansorAtual.toFixed(2)}%`;
+});
+</script>
+
+</body>
+</html>
